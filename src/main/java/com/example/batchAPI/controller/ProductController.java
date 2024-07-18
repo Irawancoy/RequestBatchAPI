@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.batchAPI.dto.request.BatchProductRequest;
 import com.example.batchAPI.services.ProductService;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/products")
@@ -22,8 +23,9 @@ public class ProductController {
          MediaType.MULTIPART_FORM_DATA_VALUE
           },produces={MediaType.APPLICATION_JSON_VALUE})
 
-   public void batchProcess(@RequestPart("request") BatchProductRequest request) {
-      productService.batchProcess(request);
+   public ResponseEntity<?> batchProcess(@RequestPart("request") BatchProductRequest request) {
+      return productService.batchProcess(request);
+
    }
 
 }
