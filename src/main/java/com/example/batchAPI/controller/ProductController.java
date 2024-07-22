@@ -1,6 +1,7 @@
 package com.example.batchAPI.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -26,6 +27,11 @@ public class ProductController {
    public ResponseEntity<?> batchProcess(@RequestPart("request") BatchProductRequest request) {
       return productService.batchProcess(request);
 
+   }
+
+   @GetMapping("/allProducts")
+   public ResponseEntity<?> getAllProducts() {
+      return productService.getAllProducts();
    }
 
 }

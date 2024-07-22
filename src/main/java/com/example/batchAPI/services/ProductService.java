@@ -35,50 +35,62 @@ public class ProductService {
       log.info(batchProductRequest.getProductsToAdd().toString());
       try {
          if (!batchProductRequest.getProductsToAdd().isEmpty()) {
-         productRepository.saveAll(batchProductRequest.getProductsToAdd());
-         responseAdd = "Products Added Successfully";
-      } else {
-         responseAdd = "No data to add";
-      }
+            productRepository.saveAll(batchProductRequest.getProductsToAdd());
+            responseAdd = "Products Added Successfully";
+         } else {
+            responseAdd = "No data to add";
+         }
 
-      if (!batchProductRequest.getProductsToUpdate().isEmpty()) {
-         if (batchProductRequest.getProductsToUpdate().size() > 0) {
-            for (int i = 0; i < batchProductRequest.getProductsToUpdate().size(); i++) {
-               if (!productRepository.existsById(batchProductRequest.getProductsToUpdate().get(i).getId())) {
-                  responseUpdate.add(
-                        "Product with id " + batchProductRequest.getProductsToUpdate().get(i).getId() + " not found");
-               } else {
-                  productRepository.save(batchProductRequest.getProductsToUpdate().get(i));
-                  responseUpdate.add("Product with id " + batchProductRequest.getProductsToUpdate().get(i).getId()
-                        + " updated successfully");
+         if (!batchProductRequest.getProductsToUpdate().isEmpty()) {
+            if (batchProductRequest.getProductsToUpdate().size() > 0) {
+               for (int i = 0; i < batchProductRequest.getProductsToUpdate().size(); i++) {
+                  if (!productRepository.existsById(batchProductRequest.getProductsToUpdate().get(i).getId())) {
+                     responseUpdate.add(
+                           "Product with id " + batchProductRequest.getProductsToUpdate().get(i).getId()
+                                 + " not found");
+                  } else {
+                     productRepository.save(batchProductRequest.getProductsToUpdate().get(i));
+                     responseUpdate.add("Product with id " + batchProductRequest.getProductsToUpdate().get(i).getId()
+                           + " updated successfully");
+                  }
+
                }
-
             }
+         } else {
+            responseUpdate.add("No data to update");
          }
-      } else {
-         responseUpdate.add("No data to update");
-      }
 
-      if (!batchProductRequest.getProductIdsToDelete().isEmpty()) {
-         for (Integer id : batchProductRequest.getProductIdsToDelete()) {
-            if (productRepository.existsById(id)) {
-               productRepository.deleteById(id);
-               responseDelete.add("Product with id " + id + " deleted successfully");
+         if (!batchProductRequest.getProductIdsToDelete().isEmpty()) {
+            for (Integer id : batchProductRequest.getProductIdsToDelete()) {
+               if (productRepository.existsById(id)) {
+                  productRepository.deleteById(id);
+                  responseDelete.add("Product with id " + id + " deleted successfully");
 
-            } else {
-               responseDelete.add("Product with id " + id + " not found");
+               } else {
+                  responseDelete.add("Product with id " + id + " not found");
+               }
             }
+         } else {
+            responseDelete.add("No data to delete");
          }
-      } else {
-         responseDelete.add("No data to delete");
-      }
 
-   } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error in Batch Processing");
+      } catch (Exception e) {
+         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error in Batch Processing");
+      }
+      MessageResponse messageResponse = new MessageResponse(responseAdd, responseUpdate, responseDelete);
+      ApiResponse apiResponse = new ApiResponse("Products Batch Processed Successfully", HttpStatus.OK.value(),
+            messageResponse);
+      return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
    }
-   MessageResponse messageResponse = new MessageResponse(responseAdd, responseUpdate, responseDelete);
-   ApiResponse apiResponse = new ApiResponse("Products Batch Processed Successfully", HttpStatus.OK.value(), messageResponse);
-   return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+
+   public ResponseEntity<Object> getAllProducts() {
+      if (productRepository.findAll().isEmpty()) {
+         ApiResponse apiResponse = new ApiResponse("No Products Found", HttpStatus.OK.value(), null);
+         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+      } else {
+         ApiResponse apiResponse = new ApiResponse("Products Found", HttpStatus.OK.value(), productRepository.findAll());
+         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+      }
    }
 
    
